@@ -34,6 +34,7 @@ func carregaComando() int {
 
 func exibeOpcoes() {
 	fmt.Println("****************************************")
+	fmt.Println("Digite a opção que você deseja executar.")
 	fmt.Println("1 - Monitorar Sites")
 	fmt.Println("2 - Exibir Logs")
 	fmt.Println("0 - Sair do Programa")

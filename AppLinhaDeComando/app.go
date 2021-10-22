@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -14,7 +17,6 @@ const (
 )
 
 func exibeIntro() {
-
 	var nome string
 	fmt.Print("Digite seu nome: ")
 	fmt.Scan(&nome)
@@ -43,7 +45,9 @@ func exibeOpcoes() {
 
 func startMonitoramento() {
 	fmt.Println("Monitorando...")
-	sites := []string{"https://golang.org/", "https://ge.globo.com", "https://alura.com.br", "https://udemy.com"}
+	//sites := []string{"https://golang.org/", "https://ge.globo.com", "https://alura.com.br", "https://udemy.com"}
+
+	sites := lerSitesDoArquivo()
 
 	for j := 0; j <= monitoramentos; j++ {
 		for i, site := range sites {
@@ -53,8 +57,33 @@ func startMonitoramento() {
 	}
 }
 
+//função que ler todos os sites que contém no arquivo sites.txt e retorna para função testaSite
+func lerSitesDoArquivo() []string {
+	var sites []string
+	//arquivo, err := ioutil.ReadFile("sites.txt")
+	arquivo, err := os.Open("sites.txt")
+	if err != nil {
+		fmt.Println("Ocorreu um erro:", err)
+	}
+	leitor := bufio.NewReader(arquivo)
+	for {
+		linha, err := leitor.ReadString('\n')
+		linha = strings.TrimSpace(linha)
+		sites = append(sites, linha)
+
+		if err == io.EOF {
+			break
+		}
+	}
+	return sites
+}
+
+//função usada para testar os sites que contém no arquivo sites.txt
 func testaSite(s string) {
-	resp, _ := http.Get(s)
+	resp, err := http.Get(s)
+	if err != nil {
+		fmt.Println("ocorreu um erro", err)
+	}
 	if resp.StatusCode == 200 {
 		fmt.Println("Site", s, "OK! Status Code:", resp.StatusCode, "\n ")
 		time.Sleep(time.Second * delay)
@@ -66,6 +95,7 @@ func testaSite(s string) {
 
 func main() {
 	exibeIntro()
+	lerSitesDoArquivo()
 
 	for {
 		exibeOpcoes()

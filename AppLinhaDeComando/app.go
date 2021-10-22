@@ -6,13 +6,14 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
 
 const (
-	monitoramentos = 4
-	delay          = 3
+	monitoramentos = 2
+	delay          = 2
 	colocacao      = "º"
 )
 
@@ -75,6 +76,7 @@ func lerSitesDoArquivo() []string {
 			break
 		}
 	}
+	arquivo.Close()
 	return sites
 }
 
@@ -86,17 +88,28 @@ func testaSite(s string) {
 	}
 	if resp.StatusCode == 200 {
 		fmt.Println("Site", s, "OK! Status Code:", resp.StatusCode, "\n ")
+		registraLog(s, true)
 		time.Sleep(time.Second * delay)
 	} else {
 		fmt.Println("Site", s, "Fora! Status Code:", resp.StatusCode, "\n ")
+		registraLog(s, false)
 		time.Sleep(time.Second * delay)
 	}
 }
 
+func registraLog(site string, status bool) {
+
+	arquivo, err := os.OpenFile("log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		panic(err.Error())
+	}
+	arquivo.WriteString(site + " - online: " + strconv.FormatBool(status) + "\n")
+	arquivo.Close()
+}
+
 func main() {
 	exibeIntro()
-	lerSitesDoArquivo()
-
+	registraLog("https://jvis.com.br", false)
 	for {
 		exibeOpcoes()
 

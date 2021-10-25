@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
@@ -14,7 +15,6 @@ import (
 const (
 	monitoramentos = 2
 	delay          = 2
-	colocacao      = "º"
 )
 
 func exibeIntro() {
@@ -44,9 +44,9 @@ func exibeOpcoes() {
 	fmt.Println("****************************************\n ")
 }
 
+//Função que inicia o monitoramento e chama a função que ler os sites a serem monitorados
 func startMonitoramento() {
 	fmt.Println("Monitorando...")
-	//sites := []string{"https://golang.org/", "https://ge.globo.com", "https://alura.com.br", "https://udemy.com"}
 
 	sites := lerSitesDoArquivo()
 
@@ -97,19 +97,30 @@ func testaSite(s string) {
 	}
 }
 
+//função que cria ou abre arquivo e grava os logs dos testes
 func registraLog(site string, status bool) {
 
 	arquivo, err := os.OpenFile("log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		panic(err.Error())
 	}
-	arquivo.WriteString(site + " - online: " + strconv.FormatBool(status) + "\n")
+	arquivo.WriteString(time.Now().Format("02/01/2006 15:04:05") + " - " + site + " - online: " + strconv.FormatBool(status) + "\n")
 	arquivo.Close()
+}
+
+//função que faz a impressão do arquivo de log
+func exibeLog() {
+
+	arquivo, err := ioutil.ReadFile("log.txt")
+	if err != nil {
+		panic(err.Error())
+	}
+	fmt.Println(string(arquivo))
+
 }
 
 func main() {
 	exibeIntro()
-	registraLog("https://jvis.com.br", false)
 	for {
 		exibeOpcoes()
 
@@ -119,6 +130,7 @@ func main() {
 			startMonitoramento()
 		case 2:
 			fmt.Println("Exibindo Logs...")
+			exibeLog()
 		case 0:
 			fmt.Println("Saindo do Programa.")
 			os.Exit(0)

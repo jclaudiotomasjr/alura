@@ -1,13 +1,7 @@
 package main
 
-import(
-	"github.com/gin-gonic/gin"
-
-) 
-
+import "github.com/jclaudiotomasjr/alura/api-go-gin/routes"
 
 func main() {
-	r := gin.Default()
-	r.Run()
-
+	routes.HandleRequests()
 }

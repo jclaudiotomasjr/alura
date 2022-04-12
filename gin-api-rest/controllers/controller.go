@@ -72,3 +72,17 @@ func EditUser(c *gin.Context) {
 		"status": "Usuário editado com sucesso!"})
 	c.JSON(http.StatusOK, user)
 }
+
+func ShowNameUser(c *gin.Context) {
+	var user models.User
+	name := c.Param("name")
+	database.DB.Where(&models.User{Name: name}).First(&user)
+	if user.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{
+			"status": "Usuário não encontrado!"})
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
+
+}

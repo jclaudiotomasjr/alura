@@ -1,3 +1,3 @@
 # Repositório de estudos na Alura
 
-> :Hammer: Estudos em geral...:Hammer:
+> :hammer: Estudos em geral...:hammer:
